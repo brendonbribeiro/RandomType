@@ -11,7 +11,7 @@ namespace RandType
 	{
 		private static TRandom random = new TRandom();
 
-		private const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		private const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 
 		public static int GetRandomInt()
 		{
