@@ -49,10 +49,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PrimitiveFuncs.cs" />
     <Compile Include="PrimitiveRandom.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandType.cs" />
+    <Compile Include="MethodTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

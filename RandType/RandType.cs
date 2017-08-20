@@ -32,64 +32,71 @@ namespace RandType
 			{
 
 				var propType = prop.PropertyType;
-				if (propType == typeof(string))
+				if (PrimitiveFuncs.Contains(propType))
 				{
-					prop.SetValue(model, PrimitiveRandom.GetRandomString(configuration.Min.String, configuration.Max.String));
+					prop.SetValue(model, PrimitiveFuncs.Get(propType, configuration));
 				}
-				else if (propType == typeof(bool) || propType == typeof(bool?))
+				else
 				{
-					prop.SetValue(model, PrimitiveRandom.GetRandomBool());
-				}
-				else if (propType == typeof(int) || propType == typeof(int?))
-				{
-					prop.SetValue(model, PrimitiveRandom.GetRandomInt(configuration.Min.Int32, configuration.Max.Int32));
-				}
-				else if (propType == typeof(double) || propType == typeof(double?))
-				{
-					prop.SetValue(model, PrimitiveRandom.GetRandomDouble(configuration.Min.Double, configuration.Max.Double));
-				}
-				else if (propType == typeof(double) || propType == typeof(double?))
-				{
-					prop.SetValue(model, PrimitiveRandom.GetRandomDouble(configuration.Min.Double, configuration.Max.Double));
-				}
-				else if (propType == typeof(DateTime) || propType == typeof(DateTime?))
-				{
-					prop.SetValue(model, PrimitiveRandom.GetRandomDateTime(configuration.Min.DateTime, configuration.Max.DateTime));
-				}
-				else if (propType == typeof(decimal) || propType == typeof(decimal?))
-				{
-					prop.SetValue(model, Convert.ToDecimal(PrimitiveRandom.GetRandomDouble(Convert.ToDouble(configuration.Min.Decimal), Convert.ToDouble(configuration.Max.Decimal))));
-				}
-
-				Type tColl = typeof(ICollection<>);
-				if (propType.IsGenericType && tColl.IsAssignableFrom(propType.GetGenericTypeDefinition()) ||
-					propType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == tColl))
-				{
-					var listType = propType.GetGenericArguments()[0];
-
-					var constructedListType = typeof(List<>).MakeGenericType(listType);
-					IList instance = (IList)Activator.CreateInstance(constructedListType);
-
-					//var listRandomModel = Activator.CreateInstance(listType);
-
-					var k = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(listType);
-
-					var maxListSize = PrimitiveRandom.GetRandomInt(configuration.Min.Int32, configuration.Max.Int32);
-					if (maxListSize > 0)
+					if (IsList(propType))
 					{
-						for (int i = 0; i < maxListSize; i++)
+						var listType = propType.GetGenericArguments()[0];
+						if (PrimitiveFuncs.Contains(listType))
 						{
-							var result = k.Invoke(null, new object[] { configuration });
-
-							instance.Add(result);
+							prop.SetValue(model, GeneratePrimitiveList(listType, configuration));
+						}
+						else
+						{
+							prop.SetValue(model, GenerateCustomList(listType, configuration));
 						}
 					}
-
-					prop.SetValue(model, instance);
 				}
 			});
 
 			return model;
+		}
+
+		private static bool IsList(Type type)
+		{
+			Type tColl = typeof(ICollection<>);
+			return type.IsGenericType && tColl.IsAssignableFrom(type.GetGenericTypeDefinition()) ||
+				type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == tColl);
+		}
+
+		private static IList GenerateCustomList(Type type, RandTypeSettings config)
+		{
+			IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
+
+			var maxListSize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			if (maxListSize > 0)
+			{
+				var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
+				for (int i = 0; i < maxListSize; i++)
+				{
+					var randomModel = method.Invoke(null, new object[] { config });
+					list.Add(randomModel);
+				}
+			}
+
+			return list;
+		}
+
+		private static IList GeneratePrimitiveList(Type type, RandTypeSettings config)
+		{
+			IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
+
+			var maxListSize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			if (maxListSize > 0)
+			{
+				//var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
+				for (int i = 0; i < maxListSize; i++)
+				{
+					var randomValue = PrimitiveFuncs.Get(type, config);
+					list.Add(randomValue);
+				}
+			}
+
+			return list;
 		}
 
 		private static List<PropertyInfo> GetPublicProperties(Type type)
@@ -116,7 +123,7 @@ namespace RandType
 				String = 2,
 				DateTime = DateTime.MinValue,
 				Decimal = 0,
-				ListSize = 30
+				ListSize = 0
 			};
 
 			Max = new RandTypeRangeSettings()
@@ -126,7 +133,7 @@ namespace RandType
 				String = 30,
 				DateTime = DateTime.Now,
 				Decimal = 5000,
-				ListSize = 0
+				ListSize = 30
 			};
 		}
 	}

@@ -27,6 +27,8 @@ namespace RandType
 		private int PrivateProp { get; set; }
 
 		public List<PriceList> PriceLists { get; set; }
+
+		public List<int> PurchaseIds { get; set; }
 	}
 
 	public class PriceList
@@ -38,5 +40,14 @@ namespace RandType
 		public decimal Latitude { get; set; }
 
 		public decimal Longitude { get; set; }
+
+		public List<PriceListItem> Items { get; set; }
+	}
+
+	public class PriceListItem
+	{
+		public int Id { get; set; }
+
+		public decimal Value { get; set; }
 	}
 }
