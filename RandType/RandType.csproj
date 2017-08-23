@@ -55,6 +55,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandType.cs" />
     <Compile Include="MethodTypes.cs" />
+    <Compile Include="RandTypeRangeSettings.cs" />
+    <Compile Include="RandTypeSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,8 @@ namespace RandType
 				var propType = prop.PropertyType;
 				if (PrimitiveFuncs.Contains(propType))
 				{
-					prop.SetValue(model, PrimitiveFuncs.Get(propType, configuration));
+					//prop.SetValue(model, PrimitiveFuncs.Get(propType, configuration));
+					SetValue(model, prop, PrimitiveFuncs.Get(propType, configuration));
 				}
 				else
 				{
@@ -43,11 +45,14 @@ namespace RandType
 						var listType = propType.GetGenericArguments()[0];
 						if (PrimitiveFuncs.Contains(listType))
 						{
-							prop.SetValue(model, GeneratePrimitiveList(listType, configuration));
+							//prop.SetValue(model, GeneratePrimitiveList(listType, configuration));
+							SetValue(model, prop, GeneratePrimitiveList(listType, configuration));
+
 						}
 						else
 						{
-							prop.SetValue(model, GenerateCustomList(listType, configuration));
+							//prop.SetValue(model, GenerateCustomList(listType, configuration));
+							SetValue(model, prop, GenerateCustomList(listType, configuration));
 						}
 					}
 				}
@@ -106,50 +111,41 @@ namespace RandType
 				.ToList();
 			return props;
 		}
-	}
 
-	public class RandTypeSettings
-	{
-		public RandTypeRangeSettings Min { get; set; }
-
-		public RandTypeRangeSettings Max { get; set; }
-
-		public RandTypeSettings()
+		private static void SetValue<T>(T model, PropertyInfo prop, object value)
 		{
-			Min = new RandTypeRangeSettings()
-			{
-				Double = 0,
-				Int32 = 0,
-				String = 2,
-				DateTime = DateTime.MinValue,
-				Decimal = 0,
-				ListSize = 0
-			};
-
-			Max = new RandTypeRangeSettings()
-			{
-				Double = 5000,
-				Int32 = 5000,
-				String = 30,
-				DateTime = DateTime.Now,
-				Decimal = 5000,
-				ListSize = 30
-			};
+			var setter = BuildUntypedSetter<T>(prop);
+			setter(model, value);
 		}
-	}
 
-	public class RandTypeRangeSettings
-	{
-		public int String { get; set; }
+		//https://stackoverflow.com/questions/17660097/is-it-possible-to-speed-this-method-up
+		public static Action<T, object> BuildUntypedSetter<T>(PropertyInfo propertyInfo)
+		{
+			var targetType = propertyInfo.DeclaringType;
+			var methodInfo = propertyInfo.GetSetMethod();
+			var exTarget = Expression.Parameter(targetType, "t");
+			var exValue = Expression.Parameter(typeof(object), "p");
+			var exBody = Expression.Call(exTarget, methodInfo,
+			   Expression.Convert(exValue, propertyInfo.PropertyType));
+			var lambda = Expression.Lambda<Action<T, object>>(exBody, exTarget, exValue);
+			var action = lambda.Compile();
+			return action;
+		}
 
-		public int Int32 { get; set; }
 
-		public double Double { get; set; }
 
-		public decimal Decimal { get; set; }
+		private object GetValue<T>(T model, PropertyInfo prop)
 
-		public DateTime DateTime { get; set; }
+		{
 
-		public int ListSize { get; set; }
+			Func<T, object> get = (Func<T, object>)
+
+				Delegate.CreateDelegate(typeof(Func<T, object>), null,
+
+					prop.GetGetMethod());
+
+			return get(model);
+
+		}
 	}
 }
