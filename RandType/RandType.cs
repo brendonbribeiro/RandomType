@@ -55,6 +55,12 @@ namespace RandType
 							SetValue(model, prop, GenerateCustomList(listType, configuration));
 						}
 					}
+					else
+					{
+						var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(propType);
+						var randomModel = method.Invoke(null, new object[] { configuration });
+						SetValue(model, prop, randomModel);
+					}
 				}
 			});
 

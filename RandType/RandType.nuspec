@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>RandType</id>
+		<version>1.0.0</version>
+		<title>RandType</title>
+		<authors>Brendon Barreto</authors>
+		<owners>Brendon Barreto</owners>
+		<projectUrl>https://github.com/brendonbarreto/RandType</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Easily generate random models</description>
+		<copyright>Copyright 2017</copyright>
+		<tags>Random</tags>
+	</metadata>
+</package>
