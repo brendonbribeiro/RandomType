@@ -10,11 +10,6 @@ namespace RandType
 
 		private const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 
-		public static int GetRandomInt()
-		{
-			return random.Next();
-		}
-
 		public static byte GetRandomByte()
 		{
 			var bytes = new byte[1];
@@ -27,6 +22,11 @@ namespace RandType
 			var bytes = new byte[size];
 			random.NextBytes(bytes);
 			return bytes;
+		}
+
+		public static int GetRandomInt()
+		{
+			return random.Next();
 		}
 
 		public static int GetRandomInt(int max)
@@ -52,6 +52,22 @@ namespace RandType
 		public static double GetRandomDouble(double min, double max)
 		{
 			return random.NextDouble(min, max);
+		}
+
+		public static float GetRandomFloat(float min, float max)
+		{
+			var result = (random.NextDouble() * (max - min)) + min;
+			return (float)result;
+		}
+
+		public static float GetRandomFloat(float max)
+		{
+			return GetRandomFloat(Single.MinValue, max);
+		}
+
+		public static float GetRandomFloat()
+		{
+			return GetRandomFloat(Single.MinValue, Single.MaxValue);
 		}
 
 		public static bool GetRandomBool()
@@ -88,6 +104,11 @@ namespace RandType
 				.Select(s => s[GetRandomInt(s.Length)]).ToArray());
 		}
 
+		public static char GenerateRandomChar()
+		{
+			return chars.ElementAt(GetRandomInt(chars.Length));
+		}
+
 		public static DateTime GetRandomDateTime()
 		{
 			var min = DateTime.MinValue;
@@ -109,8 +130,6 @@ namespace RandType
 
 			return randomDate;
 		}
-
-
 
 		public static TimeSpan GetRandomTimeSpan()
 		{

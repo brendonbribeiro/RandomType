@@ -23,7 +23,22 @@ namespace RandType.Console
 
 			public byte Byte { get; set; }
 
-			//public byte ByteProp { get; set; }
+			public List<byte> ByteList { get; set; }
+
+			public List<Batata> BatataList { get; set; }
+
+			public Batata[] BatataArray { get; set; }
+
+			public int[] IntArray { get; set; }
+
+			public char Char { get; set; }
+
+			public float Float { get; set; }
+		}
+
+		public class Batata
+		{
+			public int Hue { get; set; }
 		}
 	}
 }

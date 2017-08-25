@@ -26,9 +26,23 @@ namespace RandType
 				tp.Add(new MethodTypes(GetMethod("GetInt64"), typeof(Int64), typeof(Int64?)));
 				tp.Add(new MethodTypes(GetMethod("GetTimeSpan"), typeof(TimeSpan), typeof(TimeSpan?)));
 				tp.Add(new MethodTypes(GetMethod("GetByte"), typeof(byte), typeof(byte?)));
-				tp.Add(new MethodTypes(GetMethod("GetBytes"), typeof(byte[]), typeof(byte?[])));
+				tp.Add(new MethodTypes(GetMethod("GetBytes"), typeof(byte[]), typeof(byte?[]), typeof(ICollection<byte>)));
+				tp.Add(new MethodTypes(GetMethod("GetBytesList"), typeof(ICollection<byte>)));
+				tp.Add(new MethodTypes(GetMethod("GetChar"), typeof(char), typeof(char?)));
+				tp.Add(new MethodTypes(GetMethod("GetFloat"), typeof(float), typeof(float?)));
+
 				return tp;
 			}
+		}
+
+		private static float GetFloat(RandTypeSettings config)
+		{
+			return PrimitiveRandom.GetRandomFloat(config.Min.Float, config.Max.Float);
+		}
+
+		private static char GetChar(RandTypeSettings config)
+		{
+			return PrimitiveRandom.GenerateRandomChar();
 		}
 
 		private static byte GetByte(RandTypeSettings config)

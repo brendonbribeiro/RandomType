@@ -48,15 +48,7 @@ namespace RandType
 				{
 					if (IsList(propType))
 					{
-						var listType = propType.GetGenericArguments()[0];
-						if (PrimitiveFuncs.Contains(listType))
-						{
-							SetValue(model, prop, GeneratePrimitiveList(listType, configuration));
-						}
-						else
-						{
-							SetValue(model, prop, GenerateCustomList(listType, configuration));
-						}
+						GenerateList(propType, configuration, model, prop);
 					}
 					else
 					{
@@ -75,6 +67,34 @@ namespace RandType
 			Type tColl = typeof(ICollection<>);
 			return type.IsGenericType && tColl.IsAssignableFrom(type.GetGenericTypeDefinition()) ||
 				type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == tColl);
+		}
+
+		private static void GenerateList<TModel>(Type type, RandTypeSettings config, TModel model, PropertyInfo prop)
+		{
+			if (type.IsArray)
+			{
+				var arrayType = type.GetElementType();
+				if (PrimitiveFuncs.Contains(arrayType))
+				{
+					SetValue(model, prop, GeneratePrimitiveArray(arrayType, config));
+				}
+				else
+				{
+					SetValue(model, prop, GenerateCustomArray(arrayType, config));
+				}
+			}
+			else
+			{
+				var listType = type.GetGenericArguments()[0];
+				if (PrimitiveFuncs.Contains(listType))
+				{
+					SetValue(model, prop, GeneratePrimitiveList(listType, config));
+				}
+				else
+				{
+					SetValue(model, prop, GenerateCustomList(listType, config));
+				}
+			}
 		}
 
 		private static IList GenerateCustomList(Type type, RandTypeSettings config)
@@ -112,6 +132,39 @@ namespace RandType
 			return list;
 		}
 
+		public static Array GenerateCustomArray(Type type, RandTypeSettings config)
+		{
+			var maxArraySize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			Array array = Array.CreateInstance(type, maxArraySize);
+			if (maxArraySize > 0)
+			{
+				var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
+				for (int i = 0; i < maxArraySize; i++)
+				{
+					var randomModel = method.Invoke(null, new object[] { config });
+					array.SetValue(randomModel, i);
+				}
+			}
+
+			return array;
+		}
+
+		public static Array GeneratePrimitiveArray(Type type, RandTypeSettings config)
+		{
+			var maxArraySize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			Array array = Array.CreateInstance(type, maxArraySize);
+			if (maxArraySize > 0)
+			{
+				for (int i = 0; i < maxArraySize; i++)
+				{
+					var randomValue = PrimitiveFuncs.Get(type, config);
+					array.SetValue(randomValue, i);
+				}
+			}
+
+			return array;
+		}
+
 		private static List<PropertyInfo> GetPublicProperties(Type type)
 		{
 			var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -134,7 +187,7 @@ namespace RandType
 			var exTarget = Expression.Parameter(targetType, "t");
 			var exValue = Expression.Parameter(typeof(object), "p");
 			var exBody = Expression.Call(exTarget, methodInfo,
-			   Expression.Convert(exValue, propertyInfo.PropertyType));
+			Expression.Convert(exValue, propertyInfo.PropertyType));
 			var lambda = Expression.Lambda<Action<T, object>>(exBody, exTarget, exValue);
 			var action = lambda.Compile();
 			return action;

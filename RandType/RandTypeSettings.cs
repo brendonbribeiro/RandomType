@@ -13,6 +13,7 @@ namespace RandType
 			Min = new RandTypeRangeSettings()
 			{
 				Double = 0,
+				Float = 0,
 				Int32 = 0,
 				Int64 = 0,
 				String = 0,
@@ -25,6 +26,7 @@ namespace RandType
 			Max = new RandTypeRangeSettings()
 			{
 				Double = Double.MaxValue,
+				Float = Single.MaxValue,
 				Int32 = Int32.MaxValue,
 				Int64 = Int64.MaxValue,
 				String = 50,

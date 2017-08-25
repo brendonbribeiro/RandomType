@@ -22,5 +22,7 @@ namespace RandType
 
 		public TimeSpan TimeSpan { get; set; }
 
+		public float Float { get; set; }
+
 	}
 }
