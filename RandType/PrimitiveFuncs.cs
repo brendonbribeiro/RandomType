@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RandType
 {
@@ -25,10 +23,22 @@ namespace RandType
 				tp.Add(new MethodTypes(GetMethod("GetDouble"), typeof(double), typeof(double?)));
 				tp.Add(new MethodTypes(GetMethod("GetDate"), typeof(DateTime), typeof(DateTime?)));
 				tp.Add(new MethodTypes(GetMethod("GetDecimal"), typeof(decimal), typeof(decimal?)));
+				tp.Add(new MethodTypes(GetMethod("GetInt64"), typeof(Int64), typeof(Int64?)));
+				tp.Add(new MethodTypes(GetMethod("GetTimeSpan"), typeof(TimeSpan), typeof(TimeSpan?)));
 				return tp;
 			}
 		}
-		
+
+		private static long GetInt64(RandTypeSettings config)
+		{
+			return PrimitiveRandom.GetRandomInt64(config.Min.Int64, config.Max.Int64);
+		}
+
+		private static TimeSpan GetTimeSpan(RandTypeSettings config)
+		{
+			return PrimitiveRandom.GetRandomTimeSpan(config.Min.TimeSpan, config.Max.TimeSpan);
+		}
+
 		private static string GetString(RandTypeSettings config)
 		{
 			return PrimitiveRandom.GetRandomString(config.Min.String, config.Max.String);

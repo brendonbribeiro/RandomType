@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RandType
 {
 	public class RandType
 	{
+		/// <summary>
+		/// Generate random values for entire model (including lists)
+		/// </summary>
+		/// <typeparam name="T">The type you want to generate</typeparam>
+		/// <returns></returns>
 		public static T Generate<T>() where T : class, new()
 		{
 			return GenerateRandomModel<T>(new RandTypeSettings());
 		}
 
+		/// <summary>
+		/// Generate random values for entire model (including lists)
+		/// </summary>
+		/// <typeparam name="T">The type you want to generate</typeparam>
+		/// <param name="configuration">Range configurator</param>
+		/// <returns></returns>
 		public static T Generate<T>(Action<RandTypeSettings> configuration) where T : class, new()
 		{
 			RandTypeSettings defaultConfiguration = new RandTypeSettings();
@@ -31,11 +39,9 @@ namespace RandType
 			var props = GetPublicProperties(type);
 			props.ForEach(prop =>
 			{
-
 				var propType = prop.PropertyType;
 				if (PrimitiveFuncs.Contains(propType))
 				{
-					//prop.SetValue(model, PrimitiveFuncs.Get(propType, configuration));
 					SetValue(model, prop, PrimitiveFuncs.Get(propType, configuration));
 				}
 				else
@@ -45,13 +51,10 @@ namespace RandType
 						var listType = propType.GetGenericArguments()[0];
 						if (PrimitiveFuncs.Contains(listType))
 						{
-							//prop.SetValue(model, GeneratePrimitiveList(listType, configuration));
 							SetValue(model, prop, GeneratePrimitiveList(listType, configuration));
-
 						}
 						else
 						{
-							//prop.SetValue(model, GenerateCustomList(listType, configuration));
 							SetValue(model, prop, GenerateCustomList(listType, configuration));
 						}
 					}
@@ -99,7 +102,6 @@ namespace RandType
 			var maxListSize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
 			if (maxListSize > 0)
 			{
-				//var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
 				for (int i = 0; i < maxListSize; i++)
 				{
 					var randomValue = PrimitiveFuncs.Get(type, config);
@@ -136,22 +138,6 @@ namespace RandType
 			var lambda = Expression.Lambda<Action<T, object>>(exBody, exTarget, exValue);
 			var action = lambda.Compile();
 			return action;
-		}
-
-
-
-		private object GetValue<T>(T model, PropertyInfo prop)
-
-		{
-
-			Func<T, object> get = (Func<T, object>)
-
-				Delegate.CreateDelegate(typeof(Func<T, object>), null,
-
-					prop.GetGetMethod());
-
-			return get(model);
-
 		}
 	}
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RandType
 {
@@ -18,20 +14,24 @@ namespace RandType
 			{
 				Double = 0,
 				Int32 = 0,
-				String = 2,
+				Int64 = 0,
+				String = 0,
 				DateTime = DateTime.MinValue,
 				Decimal = 0,
-				ListSize = 0
+				ListSize = 0,
+				TimeSpan = new TimeSpan()
 			};
 
 			Max = new RandTypeRangeSettings()
 			{
-				Double = 5000,
-				Int32 = 5000,
-				String = 30,
+				Double = Double.MaxValue,
+				Int32 = Int32.MaxValue,
+				Int64 = Int64.MaxValue,
+				String = 50,
 				DateTime = DateTime.Now,
-				Decimal = 5000,
-				ListSize = 5000
+				Decimal = Decimal.MaxValue,
+				ListSize = 50,
+				TimeSpan = TimeSpan.MaxValue
 			};
 		}
 	}

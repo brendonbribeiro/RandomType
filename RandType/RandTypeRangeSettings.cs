@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RandType
 {
@@ -10,7 +6,11 @@ namespace RandType
 	{
 		public int String { get; set; }
 
-		public int Int32 { get; set; }
+		public Int16 Int16 { get; set; }
+
+		public Int32 Int32 { get; set; }
+
+		public Int64 Int64 { get; set; }
 
 		public double Double { get; set; }
 
@@ -19,5 +19,8 @@ namespace RandType
 		public DateTime DateTime { get; set; }
 
 		public int ListSize { get; set; }
+
+		public TimeSpan TimeSpan { get; set; }
+
 	}
 }

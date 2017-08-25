@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Troschuetz.Random;
 
 namespace RandType
@@ -97,6 +94,39 @@ namespace RandType
 			var randomDate = min.AddMilliseconds(timeToAdd);
 
 			return randomDate;
+		}
+
+
+
+		public static TimeSpan GetRandomTimeSpan()
+		{
+			var min = TimeSpan.MinValue;
+			var max = TimeSpan.MaxValue;
+			return GetRandomTimeSpan(min, max);
+		}
+
+		public static TimeSpan GetRandomTimeSpan(TimeSpan max)
+		{
+			var min = TimeSpan.MinValue;
+			return GetRandomTimeSpan(min, max);
+		}
+
+		public static TimeSpan GetRandomTimeSpan(TimeSpan min, TimeSpan max)
+		{
+			var range = (max - min).TotalMilliseconds;
+			var timeToAdd = GetRandomDouble(0, range);
+			var randomTime = min.Add(TimeSpan.FromMilliseconds(timeToAdd));
+
+			return randomTime;
+		}
+
+		//https://stackoverflow.com/a/6651661
+		public static long GetRandomInt64(long min, long max)
+		{
+			byte[] buf = new byte[8];
+			random.NextBytes(buf);
+			long longRand = BitConverter.ToInt64(buf, 0);
+			return (Math.Abs(longRand % (max - min)) + min);
 		}
 	}
 }
