@@ -15,9 +15,15 @@ namespace RandType.Console
 
 		public class Part
 		{
-			public long Id { get; set; }
+			public long Long { get; set; }
 
-			public TimeSpan Interval { get; set; }
+			public TimeSpan TimeSpan { get; set; }
+
+			public byte[] ByteArray { get; set; }
+
+			public byte Byte { get; set; }
+
+			//public byte ByteProp { get; set; }
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace RandType
 {
-	public class MethodTypes
+	internal class MethodTypes
 	{
 		public List<Type> Types { get; set; }
 

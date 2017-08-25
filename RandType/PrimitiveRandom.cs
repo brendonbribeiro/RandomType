@@ -15,6 +15,20 @@ namespace RandType
 			return random.Next();
 		}
 
+		public static byte GetRandomByte()
+		{
+			var bytes = new byte[1];
+			random.NextBytes(bytes);
+			return bytes.First();
+		}
+
+		public static byte[] GetRandomBytes(int size)
+		{
+			var bytes = new byte[size];
+			random.NextBytes(bytes);
+			return bytes;
+		}
+
 		public static int GetRandomInt(int max)
 		{
 			return random.Next(max);

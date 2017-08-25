@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace RandType
 {
-	public class PrimitiveFuncs
+	internal class PrimitiveFuncs
 	{
 		private static MethodInfo GetMethod(string name)
 		{
@@ -25,8 +25,20 @@ namespace RandType
 				tp.Add(new MethodTypes(GetMethod("GetDecimal"), typeof(decimal), typeof(decimal?)));
 				tp.Add(new MethodTypes(GetMethod("GetInt64"), typeof(Int64), typeof(Int64?)));
 				tp.Add(new MethodTypes(GetMethod("GetTimeSpan"), typeof(TimeSpan), typeof(TimeSpan?)));
+				tp.Add(new MethodTypes(GetMethod("GetByte"), typeof(byte), typeof(byte?)));
+				tp.Add(new MethodTypes(GetMethod("GetBytes"), typeof(byte[]), typeof(byte?[])));
 				return tp;
 			}
+		}
+
+		private static byte GetByte(RandTypeSettings config)
+		{
+			return PrimitiveRandom.GetRandomByte();
+		}
+
+		private static byte[] GetBytes(RandTypeSettings config)
+		{
+			return PrimitiveRandom.GetRandomBytes(PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize));
 		}
 
 		private static long GetInt64(RandTypeSettings config)
