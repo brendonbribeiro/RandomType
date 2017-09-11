@@ -52,7 +52,7 @@ namespace RandType
 
 		private static byte[] GetBytes(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomBytes(PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize));
+			return PrimitiveRandom.GetRandomBytes(PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize));
 		}
 
 		private static long GetInt64(RandTypeSettings config)
@@ -72,7 +72,7 @@ namespace RandType
 
 		private static int GetInt32(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomInt(config.Min.Int32, config.Max.Int32);
+			return PrimitiveRandom.GetRandomInt32(config.Min.Int32, config.Max.Int32);
 		}
 
 		private static bool GetBool(RandTypeSettings config)

@@ -101,7 +101,7 @@ namespace RandType
 		{
 			IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
 
-			var maxListSize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			var maxListSize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			if (maxListSize > 0)
 			{
 				var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
@@ -119,7 +119,7 @@ namespace RandType
 		{
 			IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
 
-			var maxListSize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			var maxListSize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			if (maxListSize > 0)
 			{
 				for (int i = 0; i < maxListSize; i++)
@@ -134,7 +134,7 @@ namespace RandType
 
 		public static Array GenerateCustomArray(Type type, RandTypeSettings config)
 		{
-			var maxArraySize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			var maxArraySize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			Array array = Array.CreateInstance(type, maxArraySize);
 			if (maxArraySize > 0)
 			{
@@ -151,7 +151,7 @@ namespace RandType
 
 		public static Array GeneratePrimitiveArray(Type type, RandTypeSettings config)
 		{
-			var maxArraySize = PrimitiveRandom.GetRandomInt(config.Min.ListSize, config.Max.ListSize);
+			var maxArraySize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			Array array = Array.CreateInstance(type, maxArraySize);
 			if (maxArraySize > 0)
 			{

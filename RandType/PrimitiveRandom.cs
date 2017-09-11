@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
 using Troschuetz.Random;
 
 namespace RandType
@@ -24,19 +25,27 @@ namespace RandType
 			return bytes;
 		}
 
-		public static int GetRandomInt()
+		public static Int32 GetRandomInt32()
 		{
-			return random.Next();
+			return GetRandomInt32(Int32.MinValue, Int32.MaxValue);
 		}
 
-		public static int GetRandomInt(int max)
+		public static Int32 GetRandomInt32(Int32 max)
 		{
-			return random.Next(max);
+			return GetRandomInt32(Int32.MinValue, max);
 		}
 
-		public static int GetRandomInt(int min, int max)
+		//http://www.vcskicks.com/code-snippet/rng-int.php
+		public static Int32 GetRandomInt32(Int32 min, Int32 max)
 		{
 			return random.Next(min, max);
+			//RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			//byte[] buffer = new byte[4];
+
+			//rng.GetBytes(buffer);
+			//Int32 result = BitConverter.ToInt32(buffer, 0);
+
+			//return new Random(result).Next(min, max);
 		}
 
 		public static double GetRandomDouble()
@@ -72,24 +81,24 @@ namespace RandType
 
 		public static bool GetRandomBool()
 		{
-			return GetRandomInt(0, 2) == 1;
+			return GetRandomInt32(0, 2) == 1;
 		}
 
 		public static string GetRandomString(int minChars, int maxChars)
 		{
-			var count = GetRandomInt(minChars, maxChars);
+			var count = GetRandomInt32(minChars, maxChars);
 			return GenerateString(count);
 		}
 
 		public static string GetRandomString(int maxChars)
 		{
-			var count = GetRandomInt(maxChars);
+			var count = GetRandomInt32(0, maxChars);
 			return GenerateString(count);
 		}
 
 		public static string GetRandomString()
 		{
-			var count = GetRandomInt();
+			var count = GetRandomInt32(0, Int32.MaxValue);
 			return GenerateString(count);
 		}
 
@@ -101,12 +110,12 @@ namespace RandType
 		private static string GenerateString(int charCount)
 		{
 			return new string(Enumerable.Repeat(chars, charCount)
-				.Select(s => s[GetRandomInt(s.Length)]).ToArray());
+				.Select(s => s[GetRandomInt32(s.Length)]).ToArray());
 		}
 
 		public static char GenerateRandomChar()
 		{
-			return chars.ElementAt(GetRandomInt(chars.Length));
+			return chars.ElementAt(GetRandomInt32(0, chars.Length));
 		}
 
 		public static DateTime GetRandomDateTime()

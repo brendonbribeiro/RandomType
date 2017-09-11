@@ -12,13 +12,13 @@ namespace RandType
 		{
 			Min = new RandTypeRangeSettings()
 			{
-				Double = 0,
-				Float = 0,
-				Int32 = 0,
-				Int64 = 0,
+				Double = Double.MinValue,
+				Float = Single.MinValue,
+				Int32 = Int32.MinValue,
+				Int64 = Int64.MinValue,
 				String = 0,
 				DateTime = DateTime.MinValue,
-				Decimal = 0,
+				Decimal = Decimal.MinValue,
 				ListSize = 0,
 				TimeSpan = new TimeSpan()
 			};

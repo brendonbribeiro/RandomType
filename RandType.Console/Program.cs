@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,26 @@ namespace RandType.Console
 	{
 		static void Main(string[] args)
 		{
+
 			var rand = RandType.Generate<Part>();
+			//var list = new List<int>();
+			//for (int i = 0; i < 500000; i++)
+			//{
+			//	list.Add(NextInt(Int32.MinValue, Int32.MaxValue));
+			//}
+			//var k = NextInt(Int32.MinValue, Int32.MaxValue);
+		}
+
+		//http://www.vcskicks.com/code-snippet/rng-int.php
+		private static int NextInt(int min, int max)
+		{
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			byte[] buffer = new byte[4];
+
+			rng.GetBytes(buffer);
+			int result = BitConverter.ToInt32(buffer, 0);
+
+			return new Random(result).Next(min, max);
 		}
 
 		public class Part
