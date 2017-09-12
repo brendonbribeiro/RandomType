@@ -14,53 +14,62 @@ namespace RandType
 		public static byte GetRandomByte()
 		{
 			var bytes = new byte[1];
-			random.NextBytes(bytes);
+
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			rng.GetBytes(bytes);
 			return bytes.First();
 		}
 
 		public static byte[] GetRandomBytes(int size)
 		{
 			var bytes = new byte[size];
-			random.NextBytes(bytes);
+			//random.NextBytes(bytes);
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			rng.GetBytes(bytes);
 			return bytes;
 		}
 
-		public static Int32 GetRandomInt32()
-		{
-			return GetRandomInt32(Int32.MinValue, Int32.MaxValue);
-		}
+		//public static Int32 GetRandomInt32()
+		//{
+		//	return GetRandomInt32(Int32.MinValue, Int32.MaxValue);
+		//}
 
-		public static Int32 GetRandomInt32(Int32 max)
-		{
-			return GetRandomInt32(Int32.MinValue, max);
-		}
+		//public static Int32 GetRandomInt32(Int32 max)
+		//{
+		//	return GetRandomInt32(Int32.MinValue, max);
+		//}
 
 		//http://www.vcskicks.com/code-snippet/rng-int.php
 		public static Int32 GetRandomInt32(Int32 min, Int32 max)
 		{
-			return random.Next(min, max);
-			//RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-			//byte[] buffer = new byte[4];
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			byte[] buffer = new byte[4];
+			rng.GetBytes(buffer);
+			Int32 result = BitConverter.ToInt32(buffer, 0);
 
-			//rng.GetBytes(buffer);
-			//Int32 result = BitConverter.ToInt32(buffer, 0);
-
-			//return new Random(result).Next(min, max);
+			return new Random(result).Next(min, max);
 		}
 
-		public static double GetRandomDouble()
-		{
-			return random.NextDouble();
-		}
+		//public static double GetRandomDouble()
+		//{
+		//	return random.NextDouble();
+		//}
 
-		public static double GetRandomDouble(double max)
-		{
-			return random.NextDouble(max);
-		}
+		//public static double GetRandomDouble(double max)
+		//{
+		//	return random.NextDouble(max);
+		//}
 
-		public static double GetRandomDouble(double min, double max)
+		public static Double GetRandomDouble(Double min, Double max)
 		{
-			return random.NextDouble(min, max);
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			byte[] buffer = new byte[4];
+			rng.GetBytes(buffer);
+			Int32 result = BitConverter.ToInt32(buffer, 0);
+			var rDouble = new Random(result).NextDouble();
+			return min + rDouble * (max - min);
+
+			//return random.NextDouble(min, max);
 		}
 
 		public static float GetRandomFloat(float min, float max)
@@ -110,7 +119,7 @@ namespace RandType
 		private static string GenerateString(int charCount)
 		{
 			return new string(Enumerable.Repeat(chars, charCount)
-				.Select(s => s[GetRandomInt32(s.Length)]).ToArray());
+				.Select(s => s[GetRandomInt32(0, s.Length)]).ToArray());
 		}
 
 		public static char GenerateRandomChar()

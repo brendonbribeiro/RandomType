@@ -54,6 +54,8 @@ namespace RandType.Console
 			public char Char { get; set; }
 
 			public float Float { get; set; }
+
+			public List<double> DoubleList { get; set; }
 		}
 
 		public class Batata

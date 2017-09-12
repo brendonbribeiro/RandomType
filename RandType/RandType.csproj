@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>RandType</RootNamespace>
     <AssemblyName>RandType</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
