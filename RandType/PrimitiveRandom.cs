@@ -7,7 +7,11 @@ namespace RandType
 {
 	public class PrimitiveRandom
 	{
-		private static TRandom random = new TRandom();
+		//private static TRandom random = new TRandom();
+
+		private static RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+
+		public static Random random = new Random();
 
 		private const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 
@@ -23,80 +27,48 @@ namespace RandType
 		public static byte[] GetRandomBytes(int size)
 		{
 			var bytes = new byte[size];
-			//random.NextBytes(bytes);
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 			rng.GetBytes(bytes);
 			return bytes;
 		}
 
-		//public static Int32 GetRandomInt32()
-		//{
-		//	return GetRandomInt32(Int32.MinValue, Int32.MaxValue);
-		//}
+		////http://www.vcskicks.com/code-snippet/rng-int.php
+		private static Int32 GenerateSeed(int size)
+		{
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			byte[] buffer = new byte[size];
+			rng.GetBytes(buffer);
+			Int32 result = BitConverter.ToInt32(buffer, 0);
 
-		//public static Int32 GetRandomInt32(Int32 max)
-		//{
-		//	return GetRandomInt32(Int32.MinValue, max);
-		//}
+			return result;
+		}
 
-		//http://www.vcskicks.com/code-snippet/rng-int.php
+		
 		public static Int32 GetRandomInt32(Int32 min, Int32 max)
 		{
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-			byte[] buffer = new byte[4];
-			rng.GetBytes(buffer);
-			Int32 result = BitConverter.ToInt32(buffer, 0);
-
-			return new Random(result).Next(min, max);
+			return new Random(GenerateSeed(sizeof(Int32))).Next(min, max);
 		}
 
-		//public static double GetRandomDouble()
-		//{
-		//	return random.NextDouble();
-		//}
-
-		//public static double GetRandomDouble(double max)
-		//{
-		//	return random.NextDouble(max);
-		//}
-
-		public static Double GetRandomDouble(Double min, Double max)
+		public static Int32 GetRandomInt32()
 		{
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-			byte[] buffer = new byte[4];
-			rng.GetBytes(buffer);
-			Int32 result = BitConverter.ToInt32(buffer, 0);
-			var rDouble = new Random(result).NextDouble();
-			return min + rDouble * (max - min);
-
-			//return random.NextDouble(min, max);
+			return new Random(GenerateSeed(sizeof(Int32))).Next();
 		}
 
-		public static float GetRandomFloat(float min, float max)
+		public static Double GetRandomDouble()
 		{
-			var result = (random.NextDouble() * (max - min)) + min;
-			return (float)result;
+			var rDouble = new Random(GenerateSeed(sizeof(Double))).NextDouble() * GetRandomInt32();
+			return rDouble;
 		}
 
-		public static float GetRandomFloat(float max)
+		public static Single GetRandomFloat()
 		{
-			return GetRandomFloat(Single.MinValue, max);
-		}
-
-		public static float GetRandomFloat()
-		{
-			return GetRandomFloat(Single.MinValue, Single.MaxValue);
+			var seed = new Random(GenerateSeed(sizeof(Single))).NextDouble();
+			var result = (seed * (Single.MaxValue - Single.MinValue)) + Single.MinValue;
+			return (Single)result;
 		}
 
 		public static bool GetRandomBool()
 		{
 			return GetRandomInt32(0, 2) == 1;
-		}
-
-		public static string GetRandomString(int minChars, int maxChars)
-		{
-			var count = GetRandomInt32(minChars, maxChars);
-			return GenerateString(count);
 		}
 
 		public static string GetRandomString(int maxChars)
@@ -105,9 +77,9 @@ namespace RandType
 			return GenerateString(count);
 		}
 
-		public static string GetRandomString()
+		public static string GetRandomString(int minChars, int maxChars)
 		{
-			var count = GetRandomInt32(0, Int32.MaxValue);
+			var count = GetRandomInt32(minChars, maxChars);
 			return GenerateString(count);
 		}
 
@@ -129,55 +101,23 @@ namespace RandType
 
 		public static DateTime GetRandomDateTime()
 		{
-			var min = DateTime.MinValue;
-			var max = DateTime.MaxValue;
-			return GetRandomDateTime(min, max);
-		}
-
-		public static DateTime GetRandomDateTime(DateTime max)
-		{
-			var min = DateTime.MinValue;
-			return GetRandomDateTime(min, max);
-		}
-
-		public static DateTime GetRandomDateTime(DateTime min, DateTime max)
-		{
-			var range = (max - min).TotalMilliseconds;
-			var timeToAdd = GetRandomDouble(0, range);
-			var randomDate = min.AddMilliseconds(timeToAdd);
-
-			return randomDate;
+			DateTime start = DateTime.MinValue;
+			int range = (DateTime.MaxValue - start).Days;
+			return start.AddDays(random.Next(range));
 		}
 
 		public static TimeSpan GetRandomTimeSpan()
 		{
-			var min = TimeSpan.MinValue;
-			var max = TimeSpan.MaxValue;
-			return GetRandomTimeSpan(min, max);
+			return new TimeSpan(GetRandomInt64());
 		}
 
-		public static TimeSpan GetRandomTimeSpan(TimeSpan max)
+		public static long GetRandomInt64()
 		{
-			var min = TimeSpan.MinValue;
-			return GetRandomTimeSpan(min, max);
-		}
+			byte[] buffer = new byte[sizeof(Int64)];
+			rng.GetBytes(buffer);
+			Int64 result = BitConverter.ToInt64(buffer, 0);
 
-		public static TimeSpan GetRandomTimeSpan(TimeSpan min, TimeSpan max)
-		{
-			var range = (max - min).TotalMilliseconds;
-			var timeToAdd = GetRandomDouble(0, range);
-			var randomTime = min.Add(TimeSpan.FromMilliseconds(timeToAdd));
-
-			return randomTime;
-		}
-
-		//https://stackoverflow.com/a/6651661
-		public static long GetRandomInt64(long min, long max)
-		{
-			byte[] buf = new byte[8];
-			random.NextBytes(buf);
-			long longRand = BitConverter.ToInt64(buf, 0);
-			return (Math.Abs(longRand % (max - min)) + min);
+			return result;
 		}
 	}
 }

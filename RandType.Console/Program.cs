@@ -11,33 +11,14 @@ namespace RandType.Console
 	{
 		static void Main(string[] args)
 		{
-
 			var rand = RandType.Generate<Part>();
-			//var list = new List<int>();
-			//for (int i = 0; i < 500000; i++)
-			//{
-			//	list.Add(NextInt(Int32.MinValue, Int32.MaxValue));
-			//}
-			//var k = NextInt(Int32.MinValue, Int32.MaxValue);
-		}
-
-		//http://www.vcskicks.com/code-snippet/rng-int.php
-		private static int NextInt(int min, int max)
-		{
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-			byte[] buffer = new byte[4];
-
-			rng.GetBytes(buffer);
-			int result = BitConverter.ToInt32(buffer, 0);
-
-			return new Random(result).Next(min, max);
 		}
 
 		public class Part
 		{
 			public long Long { get; set; }
 
-			public TimeSpan TimeSpan { get; set; }
+			public List<TimeSpan> TimeSpanList { get; set; }
 
 			public byte[] ByteArray { get; set; }
 
@@ -53,9 +34,15 @@ namespace RandType.Console
 
 			public char Char { get; set; }
 
-			public float Float { get; set; }
+			public List<float> Float { get; set; }
 
 			public List<double> DoubleList { get; set; }
+
+			public List<bool> BoolList { get; set; }
+
+			public List<long> LongList { get; set; }
+
+			public List<DateTime> DateList { get; set; }
 		}
 
 		public class Batata

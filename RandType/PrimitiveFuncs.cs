@@ -37,7 +37,7 @@ namespace RandType
 
 		private static float GetFloat(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomFloat(config.Min.Float, config.Max.Float);
+			return PrimitiveRandom.GetRandomFloat();
 		}
 
 		private static char GetChar(RandTypeSettings config)
@@ -57,12 +57,12 @@ namespace RandType
 
 		private static long GetInt64(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomInt64(config.Min.Int64, config.Max.Int64);
+			return PrimitiveRandom.GetRandomInt64();
 		}
 
 		private static TimeSpan GetTimeSpan(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomTimeSpan(config.Min.TimeSpan, config.Max.TimeSpan);
+			return PrimitiveRandom.GetRandomTimeSpan();
 		}
 
 		private static string GetString(RandTypeSettings config)
@@ -82,17 +82,17 @@ namespace RandType
 
 		private static double GetDouble(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomDouble(config.Min.Double, config.Max.Double);
+			return PrimitiveRandom.GetRandomDouble();
 		}
 
 		private static DateTime GetDate(RandTypeSettings config)
 		{
-			return PrimitiveRandom.GetRandomDateTime(config.Min.DateTime, config.Max.DateTime);
+			return PrimitiveRandom.GetRandomDateTime();
 		}
 
 		private static decimal GetDecimal(RandTypeSettings config)
 		{
-			return Convert.ToDecimal(PrimitiveRandom.GetRandomDouble(Convert.ToDouble(config.Min.Decimal), Convert.ToDouble(config.Max.Decimal)));
+			return Convert.ToDecimal(PrimitiveRandom.GetRandomDouble());
 		}
 
 		public static object Get(Type type, RandTypeSettings config)
