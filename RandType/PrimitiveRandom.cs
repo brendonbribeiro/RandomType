@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
-using Troschuetz.Random;
 
 namespace RandType
 {
