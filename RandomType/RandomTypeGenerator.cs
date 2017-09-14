@@ -4,35 +4,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
-namespace RandType
+namespace RandomType
 {
-	public class RandType
+	public class RandomTypeGenerator
 	{
 		/// <summary>
-		/// Generate random values for entire model (including lists)
+		/// Generate random values for entire model
 		/// </summary>
 		/// <typeparam name="T">The type you want to generate</typeparam>
 		/// <returns></returns>
 		public static T Generate<T>() where T : class, new()
 		{
-			return GenerateRandomModel<T>(new RandTypeSettings());
+			return GenerateRandomModel<T>(new RandomTypeSettings());
 		}
 
 		/// <summary>
-		/// Generate random values for entire model (including lists)
+		/// Generate a list of random models
+		/// </summary>
+		/// <typeparam name="T">The type you want to generate</typeparam>
+		/// <returns></returns>
+		public static List<T> GenerateList<T>() where T : class, new()
+		{
+			var list = GenerateCustomList(typeof(T), new RandomTypeSettings());
+			return (List<T>)list;
+		}
+
+		/// <summary>
+		/// Generate random values for entire model
 		/// </summary>
 		/// <typeparam name="T">The type you want to generate</typeparam>
 		/// <param name="configuration">Range configurator</param>
 		/// <returns></returns>
-		public static T Generate<T>(Action<RandTypeSettings> configuration) where T : class, new()
+		public static T Generate<T>(Action<RandomTypeSettings> configuration) where T : class, new()
 		{
-			RandTypeSettings defaultConfiguration = new RandTypeSettings();
+			RandomTypeSettings defaultConfiguration = new RandomTypeSettings();
 			configuration.Invoke(defaultConfiguration);
 			return GenerateRandomModel<T>(defaultConfiguration);
 		}
 
-		private static T GenerateRandomModel<T>(RandTypeSettings configuration) where T : class, new()
+		/// <summary>
+		/// Generate a list of random models
+		/// </summary>
+		/// <typeparam name="T">The type you want to generate</typeparam>
+		/// <param name="configuration">Range configurator</param>
+		/// <returns></returns>
+		public static List<T> GenerateList<T>(Action<RandomTypeSettings> configuration) where T : class, new()
+		{
+			RandomTypeSettings defaultConfiguration = new RandomTypeSettings();
+			configuration.Invoke(defaultConfiguration);
+			var list = GenerateCustomList(typeof(T), defaultConfiguration);
+			return (List<T>)list;
+		}
+
+		private static T GenerateRandomModel<T>(RandomTypeSettings configuration) where T : class, new()
 		{
 			T model = new T();
 			var type = typeof(T);
@@ -50,9 +76,13 @@ namespace RandType
 					{
 						GenerateList(propType, configuration, model, prop);
 					}
+					else if (IsEnum(propType))
+					{
+						GenerateEnum(propType, model, prop);
+					}
 					else
 					{
-						var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(propType);
+						var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(propType);
 						var randomModel = method.Invoke(null, new object[] { configuration });
 						SetValue(model, prop, randomModel);
 					}
@@ -69,7 +99,28 @@ namespace RandType
 				type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == tColl);
 		}
 
-		private static void GenerateList<TModel>(Type type, RandTypeSettings config, TModel model, PropertyInfo prop)
+		private static bool IsEnum(Type type)
+		{
+			var utype = Nullable.GetUnderlyingType(type);
+			return type.IsEnum || (utype != null && utype.IsEnum);
+		}
+
+		private static Type GetNullableType(Type type)
+		{
+			var nType = Nullable.GetUnderlyingType(type);
+			return nType ?? type;
+		}
+
+		private static void GenerateEnum<TModel>(Type type, TModel model, PropertyInfo prop)
+		{
+			var t = GetNullableType(type);
+			var enumList = Enum.GetValues(t);
+			var randomEnum = enumList.GetValue(PrimitiveRandom.GetRandomInt32(0, enumList.Length));
+			SetValue(model, prop, randomEnum);
+
+		}
+
+		private static void GenerateList<TModel>(Type type, RandomTypeSettings config, TModel model, PropertyInfo prop)
 		{
 			if (type.IsArray)
 			{
@@ -97,14 +148,14 @@ namespace RandType
 			}
 		}
 
-		private static IList GenerateCustomList(Type type, RandTypeSettings config)
+		private static IList GenerateCustomList(Type type, RandomTypeSettings config)
 		{
 			IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
 
 			var maxListSize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			if (maxListSize > 0)
 			{
-				var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
+				var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
 				for (int i = 0; i < maxListSize; i++)
 				{
 					var randomModel = method.Invoke(null, new object[] { config });
@@ -115,7 +166,7 @@ namespace RandType
 			return list;
 		}
 
-		private static IList GeneratePrimitiveList(Type type, RandTypeSettings config)
+		private static IList GeneratePrimitiveList(Type type, RandomTypeSettings config)
 		{
 			IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
 
@@ -132,13 +183,13 @@ namespace RandType
 			return list;
 		}
 
-		public static Array GenerateCustomArray(Type type, RandTypeSettings config)
+		private static Array GenerateCustomArray(Type type, RandomTypeSettings config)
 		{
 			var maxArraySize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			Array array = Array.CreateInstance(type, maxArraySize);
 			if (maxArraySize > 0)
 			{
-				var method = typeof(RandType).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
+				var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
 				for (int i = 0; i < maxArraySize; i++)
 				{
 					var randomModel = method.Invoke(null, new object[] { config });
@@ -149,7 +200,7 @@ namespace RandType
 			return array;
 		}
 
-		public static Array GeneratePrimitiveArray(Type type, RandTypeSettings config)
+		private static Array GeneratePrimitiveArray(Type type, RandomTypeSettings config)
 		{
 			var maxArraySize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			Array array = Array.CreateInstance(type, maxArraySize);
@@ -180,7 +231,7 @@ namespace RandType
 		}
 
 		//https://stackoverflow.com/questions/17660097/is-it-possible-to-speed-this-method-up
-		public static Action<T, object> BuildUntypedSetter<T>(PropertyInfo propertyInfo)
+		private static Action<T, object> BuildUntypedSetter<T>(PropertyInfo propertyInfo)
 		{
 			var targetType = propertyInfo.DeclaringType;
 			var methodInfo = propertyInfo.GetSetMethod();

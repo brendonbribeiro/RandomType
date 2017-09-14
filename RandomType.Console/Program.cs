@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using RandomType;
 
-namespace RandType.Console
+namespace RandomType.Console
 {
 	class Program
 	{
 		static void Main(string[] args)
 		{
-			var rand = RandType.Generate<Part>();
+			var rand = RandomTypeGenerator.GenerateList<Part>();
 		}
 
 		public class Part
@@ -43,11 +43,20 @@ namespace RandType.Console
 			public List<long> LongList { get; set; }
 
 			public List<DateTime> DateList { get; set; }
+
+			public EnumTest? EnumNulable { get; set; }
+
+			public EnumTest Enum { get; set; }
 		}
 
 		public class Batata
 		{
 			public int Hue { get; set; }
+		}
+
+		public enum EnumTest
+		{
+			Value1, Value2
 		}
 	}
 }

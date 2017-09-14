@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace RandType
+namespace RandomType
 {
-	public class RandTypeSettings
+	public class RandomTypeSettings
 	{
-		public RandTypeRangeSettings Min { get; set; }
+		public RandomTypeRangeSettings Min { get; set; }
 
-		public RandTypeRangeSettings Max { get; set; }
+		public RandomTypeRangeSettings Max { get; set; }
 
-		public RandTypeSettings()
+		public RandomTypeSettings()
 		{
-			Min = new RandTypeRangeSettings()
+			Min = new RandomTypeRangeSettings()
 			{
 				//Double = 0,
 				//Float = Single.MinValue,
@@ -23,7 +25,7 @@ namespace RandType
 				TimeSpan = new TimeSpan()
 			};
 
-			Max = new RandTypeRangeSettings()
+			Max = new RandomTypeRangeSettings()
 			{
 				//Double = Double.MaxValue,
 				//Float = Single.MaxValue,

@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
-namespace RandType
+namespace RandomType
 {
 	public class PrimitiveRandom
 	{
 		//private static TRandom random = new TRandom();
 
-		private static RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+		private static RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
 		public static Random random = new Random();
 
@@ -17,8 +19,6 @@ namespace RandType
 		public static byte GetRandomByte()
 		{
 			var bytes = new byte[1];
-
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 			rng.GetBytes(bytes);
 			return bytes.First();
 		}
@@ -33,7 +33,6 @@ namespace RandType
 		////http://www.vcskicks.com/code-snippet/rng-int.php
 		private static Int32 GenerateSeed(int size)
 		{
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 			byte[] buffer = new byte[size];
 			rng.GetBytes(buffer);
 			Int32 result = BitConverter.ToInt32(buffer, 0);
@@ -41,28 +40,33 @@ namespace RandType
 			return result;
 		}
 
-		
+
 		public static Int32 GetRandomInt32(Int32 min, Int32 max)
 		{
-			return new Random(GenerateSeed(sizeof(Int32))).Next(min, max);
+			return random.Next(min, max);
+			//return new Random(GenerateSeed(sizeof(Int32))).Next(min, max);
 		}
 
 		public static Int32 GetRandomInt32()
 		{
-			return new Random(GenerateSeed(sizeof(Int32))).Next();
+			return random.Next();
+			//return new Random(GenerateSeed(sizeof(Int32))).Next();
 		}
 
 		public static Double GetRandomDouble()
 		{
-			var rDouble = new Random(GenerateSeed(sizeof(Double))).NextDouble() * GetRandomInt32();
+			//var rDouble = new Random(GenerateSeed(sizeof(Double))).NextDouble() * GetRandomInt32();
+			var rDouble = random.NextDouble() * GetRandomInt32();
 			return rDouble;
 		}
 
 		public static Single GetRandomFloat()
 		{
-			var seed = new Random(GenerateSeed(sizeof(Single))).NextDouble();
-			var result = (seed * (Single.MaxValue - Single.MinValue)) + Single.MinValue;
-			return (Single)result;
+			byte[] buffer = new byte[sizeof(Single)];
+			rng.GetBytes(buffer);
+			Single result = BitConverter.ToSingle(buffer, 0);
+
+			return result;
 		}
 
 		public static bool GetRandomBool()

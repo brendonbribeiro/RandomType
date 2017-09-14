@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace RandType
+namespace RandomType
 {
-	public class RandTypeRangeSettings
+	public class RandomTypeRangeSettings
 	{
 		public int String { get; set; }
 

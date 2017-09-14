@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{90904780-284A-43C5-93FA-83BDF53C60CB}</ProjectGuid>
+    <ProjectGuid>{E48A95C4-C004-4432-AD8D-5D086DFE6C49}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RandType.Console</RootNamespace>
-    <AssemblyName>RandType.Console</AssemblyName>
+    <RootNamespace>RandomType.Console</RootNamespace>
+    <AssemblyName>RandomType.Console</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -49,9 +49,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RandType\RandType.csproj">
-      <Project>{6943630f-c187-4c1d-823f-6c9d78cd00f4}</Project>
-      <Name>RandType</Name>
+    <ProjectReference Include="..\RandomType\RandomType.csproj">
+      <Project>{fcee0eba-d141-4baf-8d9e-1c28c4d3f514}</Project>
+      <Name>RandomType</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

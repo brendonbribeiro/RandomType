@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace RandType
+namespace RandomType
 {
 	internal class MethodTypes
 	{
