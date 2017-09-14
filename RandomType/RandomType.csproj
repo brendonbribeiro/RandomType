@@ -1,11 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+		<PackageId>RandomType</PackageId>
+		<PackageVersion>1.0.0</PackageVersion>
+		<Authors>Brendon Barreto</Authors>
+		<Description>Generate random values for all properties of a model</Description>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<!--<PackageReleaseNotes>First release</PackageReleaseNotes>-->
+		<Copyright>Copyright 2017. All rights reserved.</Copyright>
+		<PackageTags>rand random randomtype type generator</PackageTags>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="nuget.exe" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="nuget.exe" />
+	</ItemGroup>
 
 </Project>
