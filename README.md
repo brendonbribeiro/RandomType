@@ -71,4 +71,4 @@ Not all types are available yet, are being implemented over time. Below are all 
 
 If you feel the need for new types, or find a bug
 1. Pull requests are always welcome (you can fork the repository aswell)
-2. [Issues][issues] created will help me to set some priority
+2. Issues created will help me to set some priority
