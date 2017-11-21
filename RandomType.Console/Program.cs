@@ -11,7 +11,17 @@ namespace RandomType.Console
 	{
 		static void Main(string[] args)
 		{
-			var rand = RandomTypeGenerator.GenerateList<Part>();
+			var part = RandomTypeGenerator.Generate<Dictionary<List<Part>, float>>(c =>
+			{
+				c.Min.ListSize = 40;
+				c.Max.ListSize = 40;
+			});
+
+			//var ints = RandomTypeGenerator.GenerateList<DayOfWeek>(m =>
+			//{
+			//	m.Min.ListSize = 500;
+			//	m.Max.ListSize = 500;
+			//});
 		}
 
 		public class Part
@@ -47,6 +57,8 @@ namespace RandomType.Console
 			public EnumTest? EnumNulable { get; set; }
 
 			public EnumTest Enum { get; set; }
+
+			//public Dictionary<int, float> Dick { get; set; }
 		}
 
 		public class Batata
@@ -56,7 +68,7 @@ namespace RandomType.Console
 
 		public enum EnumTest
 		{
-			Value1, Value2
+			Auto, Value2
 		}
 	}
 }
