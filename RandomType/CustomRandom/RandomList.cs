@@ -53,10 +53,9 @@ namespace RandomType.CustomRandom
 			var maxListSize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
 			if (maxListSize > 0)
 			{
-				var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
 				for (int i = 0; i < maxListSize; i++)
 				{
-					var randomModel = method.Invoke(null, new object[] { config });
+					var randomModel = RandomTypeGenerator.Generate(type, config);
 					list.Add(randomModel);
 				}
 			}
@@ -87,10 +86,9 @@ namespace RandomType.CustomRandom
 			Array array = Array.CreateInstance(type, maxArraySize);
 			if (maxArraySize > 0)
 			{
-				var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
 				for (int i = 0; i < maxArraySize; i++)
 				{
-					var randomModel = method.Invoke(null, new object[] { config });
+					var randomModel = RandomTypeGenerator.Generate(type, config);
 					array.SetValue(randomModel, i);
 				}
 			}

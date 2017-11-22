@@ -26,5 +26,7 @@ namespace RandomType
 
 		//public float Float { get; set; }
 
+		public int DictionarySize { get; set; }
+
 	}
 }

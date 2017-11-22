@@ -18,7 +18,25 @@ namespace RandomType
 		/// <returns></returns>
 		public static T Generate<T>()
 		{
-			return GenerateRandomModel<T>(new RandomTypeSettings());
+			return Generate<T>(new RandomTypeSettings());
+		}
+
+		/// <summary>
+		/// Generate random values for entire model
+		/// </summary>
+		/// <typeparam name="T">The type you want to generate</typeparam>
+		/// <param name="configuration">Range configurator</param>
+		/// <returns></returns>
+		public static T Generate<T>(Action<RandomTypeSettings> configuration)
+		{
+			RandomTypeSettings cfg = new RandomTypeSettings();
+			configuration.Invoke(cfg);
+			return Generate<T>(cfg);
+		}
+
+		public static T Generate<T>(RandomTypeSettings configuration)
+		{
+			return (T)Generate(typeof(T), configuration);
 		}
 
 		/// <summary>
@@ -30,19 +48,6 @@ namespace RandomType
 		{
 			var list = RandomList.Generate(typeof(T), new RandomTypeSettings());
 			return (List<T>)list;
-		}
-
-		/// <summary>
-		/// Generate random values for entire model
-		/// </summary>
-		/// <typeparam name="T">The type you want to generate</typeparam>
-		/// <param name="configuration">Range configurator</param>
-		/// <returns></returns>
-		public static T Generate<T>(Action<RandomTypeSettings> configuration)
-		{
-			RandomTypeSettings defaultConfiguration = new RandomTypeSettings();
-			configuration.Invoke(defaultConfiguration);
-			return GenerateRandomModel<T>(defaultConfiguration);
 		}
 
 		/// <summary>
@@ -59,190 +64,65 @@ namespace RandomType
 			return (List<T>)list;
 		}
 
-		internal static T GenerateRandomModel<T>(RandomTypeSettings configuration)
+		public static List<T> GenerateList<T>(RandomTypeSettings configuration)
 		{
+			var list = RandomList.Generate(typeof(T), configuration);
+			return (List<T>)list;
+		}
 
-			if (PrimitiveFuncs.Contains(typeof(T)))
-			{
-				return (T)PrimitiveFuncs.Get(typeof(T), configuration);
-			}
-			else if (RandomList.Validate(typeof(T)))
-			{
-				return (T)RandomList.Generate(typeof(T), configuration);
-			}
-			else if (RandomEnum.Validate(typeof(T)))
-			{
-				return (T)RandomEnum.Generate(typeof(T));
-			}
-			else if (RandomDictionary.Validate(typeof(T)))
-			{
-				return (T)RandomDictionary.Generate(typeof(T), configuration);
+		public static object GenerateList(Type type, RandomTypeSettings configuration)
+		{
+			var list = RandomList.Generate(type, configuration);
+			return list;
+		}
 
-				//return (T)Activator.CreateInstance(typeof(T));
+		private static (bool valueSet, object value) GetTypeRandomValue(Type type, RandomTypeSettings configuration)
+		{
+			switch (type)
+			{
+				case Type t when PrimitiveFuncs.Contains(type):
+					return (true, PrimitiveFuncs.Get(type, configuration));
+				case Type i when RandomList.Validate(type):
+					return (true, RandomList.Generate(type, configuration));
+				case Type i when RandomEnum.Validate(type):
+					return (true, RandomEnum.Generate(type));
+				case Type i when RandomDictionary.Validate(type):
+					return (true, RandomDictionary.Generate(type, configuration));
+				default:
+					return (false, null);
+			}
+		}
+
+		public static object Generate(Type type, RandomTypeSettings configuration)
+		{
+			var tv = GetTypeRandomValue(type, configuration);
+			if (tv.valueSet)
+			{
+				return tv.value;
 			}
 			else
 			{
-				T model = (T)Activator.CreateInstance(typeof(T))/* new T()*/;
-				var type = typeof(T);
+				object model = Activator.CreateInstance(type);
 				var props = GetPublicProperties(type);
 				props.ForEach(prop =>
 				{
+
 					var propType = prop.PropertyType;
-					if (PrimitiveFuncs.Contains(propType))
+					tv = GetTypeRandomValue(propType, configuration);
+
+					if (tv.valueSet)
 					{
-						SetValue(model, prop, PrimitiveFuncs.Get(propType, configuration));
+						SetValue(model, prop, tv.value);
 					}
 					else
 					{
-						if (RandomList.Validate(propType))
-						{
-							SetValue(model, prop, RandomList.Generate(propType, configuration));
-						}
-						else if (RandomEnum.Validate(propType))
-						{
-							SetValue(model, prop, RandomEnum.Generate(propType));
-						}
-						else
-						{
-							var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(propType);
-							var randomModel = method.Invoke(null, new object[] { configuration });
-							SetValue(model, prop, randomModel);
-						}
+						var randomModel = Generate(propType, configuration);
+						SetValue(model, prop, randomModel);
 					}
 				});
 
 				return model;
 			}
-		}
-
-		//private static bool IsEnum(Type type)
-		//{
-		//	var utype = Nullable.GetUnderlyingType(type);
-		//	return type.IsEnum || (utype != null && utype.IsEnum);
-		//}
-
-		//private static Type GetNullableType(Type type)
-		//{
-
-		//	var nType = Nullable.GetUnderlyingType(type);
-		//	return nType ?? type;
-		//}
-
-		//private static object GenerateEnum(Type type)
-		//{
-		//	var t = GetNullableType(type);
-		//	var enumList = Enum.GetValues(t);
-
-		//	var randomEnum = enumList.GetValue(PrimitiveRandom.GetRandomInt32(0, enumList.Length));
-		//	return randomEnum;
-		//}
-
-		//private static bool IsList(Type type)
-		//{
-		//	Type tColl = typeof(ICollection<>);
-		//	return type.IsGenericType && tColl.IsAssignableFrom(type.GetGenericTypeDefinition()) ||
-		//		type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == tColl);
-		//}
-
-		//private static IList GenerateList(Type type, RandomTypeSettings config)
-		//{
-		//	if (type.IsArray)
-		//	{
-		//		var arrayType = type.GetElementType();
-		//		if (PrimitiveFuncs.Contains(arrayType))
-		//		{
-		//			return GeneratePrimitiveArray(arrayType, config);
-		//		}
-		//		else
-		//		{
-		//			return GenerateCustomArray(arrayType, config);
-		//		}
-		//	}
-		//	else
-		//	{
-		//		var listType = type.GetGenericArguments()[0];
-		//		if (PrimitiveFuncs.Contains(listType))
-		//		{
-		//			return GeneratePrimitiveList(listType, config);
-		//		}
-		//		else
-		//		{
-		//			return GenerateCustomList(listType, config);
-		//		}
-		//	}
-		//}
-
-		//private static IList GenerateCustomList(Type type, RandomTypeSettings config)
-		//{
-		//	IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
-
-		//	var maxListSize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
-		//	if (maxListSize > 0)
-		//	{
-		//		var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
-		//		for (int i = 0; i < maxListSize; i++)
-		//		{
-		//			var randomModel = method.Invoke(null, new object[] { config });
-		//			list.Add(randomModel);
-		//		}
-		//	}
-
-		//	return list;
-		//}
-
-		//private static IList GeneratePrimitiveList(Type type, RandomTypeSettings config)
-		//{
-		//	IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
-
-		//	var maxListSize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
-		//	if (maxListSize > 0)
-		//	{
-		//		for (int i = 0; i < maxListSize; i++)
-		//		{
-		//			var randomValue = PrimitiveFuncs.Get(type, config);
-		//			list.Add(randomValue);
-		//		}
-		//	}
-
-		//	return list;
-		//}
-
-		//private static Array GenerateCustomArray(Type type, RandomTypeSettings config)
-		//{
-		//	var maxArraySize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
-		//	Array array = Array.CreateInstance(type, maxArraySize);
-		//	if (maxArraySize > 0)
-		//	{
-		//		var method = typeof(RandomTypeGenerator).GetMethod("GenerateRandomModel", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(type);
-		//		for (int i = 0; i < maxArraySize; i++)
-		//		{
-		//			var randomModel = method.Invoke(null, new object[] { config });
-		//			array.SetValue(randomModel, i);
-		//		}
-		//	}
-
-		//	return array;
-		//}
-
-		//private static Array GeneratePrimitiveArray(Type type, RandomTypeSettings config)
-		//{
-		//	var maxArraySize = PrimitiveRandom.GetRandomInt32(config.Min.ListSize, config.Max.ListSize);
-		//	Array array = Array.CreateInstance(type, maxArraySize);
-		//	if (maxArraySize > 0)
-		//	{
-		//		for (int i = 0; i < maxArraySize; i++)
-		//		{
-		//			var randomValue = PrimitiveFuncs.Get(type, config);
-		//			array.SetValue(randomValue, i);
-		//		}
-		//	}
-
-		//	return array;
-		//}
-
-		public static IDictionary GenerateDictionary(Type type, RandomTypeSettings config)
-		{
-			return new Dictionary<int, double>();
 		}
 
 		private static List<PropertyInfo> GetPublicProperties(Type type)
@@ -255,8 +135,10 @@ namespace RandomType
 
 		private static void SetValue<T>(T model, PropertyInfo prop, object value)
 		{
-			var setter = BuildUntypedSetter<T>(prop);
-			setter(model, value);
+			//var setter = BuildUntypedSetter<T>(prop);
+			//setter(model, value);
+			//TODO FASTER
+			prop.SetValue(model, value);
 		}
 
 		//https://stackoverflow.com/questions/17660097/is-it-possible-to-speed-this-method-up

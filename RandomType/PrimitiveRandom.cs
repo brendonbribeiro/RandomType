@@ -8,8 +8,6 @@ namespace RandomType
 {
 	public class PrimitiveRandom
 	{
-		//private static TRandom random = new TRandom();
-
 		private static RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
 		public static Random random = new Random();
@@ -44,18 +42,15 @@ namespace RandomType
 		public static Int32 GetRandomInt32(Int32 min, Int32 max)
 		{
 			return random.Next(min, max);
-			//return new Random(GenerateSeed(sizeof(Int32))).Next(min, max);
 		}
 
 		public static Int32 GetRandomInt32()
 		{
 			return random.Next();
-			//return new Random(GenerateSeed(sizeof(Int32))).Next();
 		}
 
 		public static Double GetRandomDouble()
 		{
-			//var rDouble = new Random(GenerateSeed(sizeof(Double))).NextDouble() * GetRandomInt32();
 			var rDouble = random.NextDouble() * GetRandomInt32();
 			return rDouble;
 		}
