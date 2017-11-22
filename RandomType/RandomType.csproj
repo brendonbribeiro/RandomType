@@ -4,7 +4,7 @@
 		<!--<TargetFrameworks>netstandard2.0;net45</TargetFrameworks>-->
 		<TargetFrameworks>netstandard2.0;</TargetFrameworks>
 		<PackageId>RandomType</PackageId>
-		<PackageVersion>1.0.0</PackageVersion>
+		<PackageVersion>2.0.0</PackageVersion>
 		<Authors>Brendon Barreto</Authors>
 		<Description>Generate random values for all properties of a model</Description>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -12,6 +12,18 @@
 		<Copyright>Copyright 2017. All rights reserved.</Copyright>
 		<PackageTags>rand random randomtype type generator</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageReleaseNotes>targetframework net45 support REMOVED. 
+New features:
+*Support to dictionary
+*Possibility of generate random values for primitive types
+*New overloads to Generate and GenerateList methods
+
+Bug fixes
+*Generating lists of enums, or lists inside lists</PackageReleaseNotes>
+		<Version>2.0.0</Version>
+		<PackageProjectUrl>https://github.com/brendonbarreto/RandomType</PackageProjectUrl>
+		<PackageIconUrl>https://image.flaticon.com/icons/svg/579/579486.svg</PackageIconUrl>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/brendonbarreto/RandomType/master/LICENSE</PackageLicenseUrl>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
