@@ -27,6 +27,11 @@ var randomModel = RandomTypeGenerator.GenerateList<YourType>();
 ```
 The code above will create a list with a random number of elements, **within the configured limits**. To understand how to configure, just read the section below
 
+And if you need, that works as well
+```cs
+var randomModel = RandomTypeGenerator.Generate<int>();
+```
+
 ### Range settings
 
 If you need more specific random values, you can set the minimum and maximum values for some data types
@@ -63,7 +68,8 @@ Not all types are available yet, are being implemented over time. Below are all 
 * Char
 * Float
 * Enum
-* Arrays & collections of all above except Enum
+* Array & collections
+* Dictionary **(new)**
 
 **If the model has other models inside it, or lists, they will also be generated randomly**
 
