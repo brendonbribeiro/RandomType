@@ -76,29 +76,46 @@ namespace RandomType
 			return list;
 		}
 
-		private static (bool valueSet, object value) GetTypeRandomValue(Type type, RandomTypeSettings configuration)
+		//private static (bool valueSet, object value) GetTypeRandomValue(Type type, RandomTypeSettings configuration)
+		//{
+		//	switch (type)
+		//	{
+		//		case Type t when PrimitiveFuncs.Contains(type):
+		//			return (true, PrimitiveFuncs.Get(type, configuration));
+		//		case Type i when RandomList.Validate(type):
+		//			return (true, RandomList.Generate(type, configuration));
+		//		case Type i when RandomEnum.Validate(type):
+		//			return (true, RandomEnum.Generate(type));
+		//		case Type i when RandomDictionary.Validate(type):
+		//			return (true, RandomDictionary.Generate(type, configuration));
+		//		default:
+		//			return (false, null);
+		//	}
+		//}
+
+		private static KeyValuePair<bool, object> GetTypeRandomValue(Type type, RandomTypeSettings configuration)
 		{
 			switch (type)
 			{
 				case Type t when PrimitiveFuncs.Contains(type):
-					return (true, PrimitiveFuncs.Get(type, configuration));
+					return new KeyValuePair<bool, object>(true, PrimitiveFuncs.Get(type, configuration));
 				case Type i when RandomList.Validate(type):
-					return (true, RandomList.Generate(type, configuration));
+					return new KeyValuePair<bool, object>(true, RandomList.Generate(type, configuration));
 				case Type i when RandomEnum.Validate(type):
-					return (true, RandomEnum.Generate(type));
+					return new KeyValuePair<bool, object>(true, RandomEnum.Generate(type));
 				case Type i when RandomDictionary.Validate(type):
-					return (true, RandomDictionary.Generate(type, configuration));
+					return new KeyValuePair<bool, object>(true, RandomDictionary.Generate(type, configuration));
 				default:
-					return (false, null);
+					return new KeyValuePair<bool, object>(false, null);
 			}
 		}
 
 		public static object Generate(Type type, RandomTypeSettings configuration)
 		{
 			var tv = GetTypeRandomValue(type, configuration);
-			if (tv.valueSet)
+			if (tv.Key)
 			{
-				return tv.value;
+				return tv.Value;
 			}
 			else
 			{
@@ -110,9 +127,9 @@ namespace RandomType
 					var propType = prop.PropertyType;
 					tv = GetTypeRandomValue(propType, configuration);
 
-					if (tv.valueSet)
+					if (tv.Key)
 					{
-						SetValue(model, prop, tv.value);
+						SetValue(model, prop, tv.Value);
 					}
 					else
 					{
@@ -137,9 +154,31 @@ namespace RandomType
 		{
 			//var setter = BuildUntypedSetter<T>(prop);
 			//setter(model, value);
+
 			//TODO FASTER
 			prop.SetValue(model, value);
 		}
+
+		//private static void SetValue(object model, PropertyInfo prop, object value)
+		//{
+		//	if (value != null)
+		//	{
+		//		var method = typeof(RandomTypeGenerator).GetMethod("SetTypedValue", BindingFlags.Static | BindingFlags.NonPublic);
+		//		var meth = method.MakeGenericMethod(model.GetType(), value.GetType());
+		//		meth.Invoke(null, new object[] { model, prop, value });
+
+		//	}
+
+		//}
+
+		//private static void SetTypedValue<T, TOut>(T model, PropertyInfo prop, TOut value)
+		//{
+		//	Action<T, TOut> set = (Action<T, TOut>)
+		//		Delegate.CreateDelegate(typeof(Action<T, TOut>), null,
+		//			prop.GetSetMethod());
+
+		//	set(model, value);
+		//}
 
 		//https://stackoverflow.com/questions/17660097/is-it-possible-to-speed-this-method-up
 		private static Action<T, object> BuildUntypedSetter<T>(PropertyInfo propertyInfo)
