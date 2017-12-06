@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RandomType.CustomRandom
+namespace RandomType.Types
 {
+	[RandomType]
 	internal class RandomEnum
 	{
-		public static bool Validate(Type type)
+		[Match]
+		public static bool Matches(Type type)
 		{
 			var utype = GetNullableType(type);
 			return type.IsEnum || (utype != null && utype.IsEnum);
 		}
 
-		public static object Generate(Type type)
+		[Get]
+		public static object Get(Type type)
 		{
 			var t = GetNullableType(type);
 			var enumList = Enum.GetValues(t);

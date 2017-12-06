@@ -1,4 +1,4 @@
-﻿using RandomType.CustomRandom;
+﻿using RandomType.Types;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace RandomType
 		/// <returns></returns>
 		public static List<T> GenerateList<T>()
 		{
-			var list = RandomList.Generate(typeof(T), new RandomTypeSettings());
+			var list = RandomList.Get(typeof(T), new RandomTypeSettings());
 			return (List<T>)list;
 		}
 
@@ -60,19 +60,19 @@ namespace RandomType
 		{
 			RandomTypeSettings defaultConfiguration = new RandomTypeSettings();
 			configuration.Invoke(defaultConfiguration);
-			var list = RandomList.Generate(typeof(T), defaultConfiguration);
+			var list = RandomList.Get(typeof(T), defaultConfiguration);
 			return (List<T>)list;
 		}
 
 		public static List<T> GenerateList<T>(RandomTypeSettings configuration)
 		{
-			var list = RandomList.Generate(typeof(T), configuration);
+			var list = RandomList.Get(typeof(T), configuration);
 			return (List<T>)list;
 		}
 
 		public static object GenerateList(Type type, RandomTypeSettings configuration)
 		{
-			var list = RandomList.Generate(type, configuration);
+			var list = RandomList.Get(type, configuration);
 			return list;
 		}
 
@@ -93,18 +93,53 @@ namespace RandomType
 		//	}
 		//}
 
+		public static Dictionary<MethodInfo, List<Func<Type, bool>>> RandomTypesDict
+		{
+			get
+			{
+				var randomTypes = AppDomain.CurrentDomain.GetAssemblies()
+					.SelectMany(t => t.GetTypes())
+					.Where(t => t.IsClass && Attribute.IsDefined(t, typeof(RandomTypeAttribute)));
+
+				var funcs = new Dictionary<MethodInfo, List<Func<Type, bool>>>();
+				foreach (var randomType in randomTypes)
+				{
+					var matchMethods = randomType.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(t => Attribute.IsDefined(t, typeof(MatchAttribute)));
+					var matchFuncs = new List<Func<Type, bool>>();
+					foreach (var matchMethod in matchMethods)
+					{
+						Func<Type, bool> matchFunc = (Func<Type, bool>)
+										Delegate.CreateDelegate(typeof(Func<Type, bool>), matchMethod);
+						matchFuncs.Add(matchFunc);
+					}
+
+					//Func<Type, bool> matchFuncs = (Func<Type, bool>)
+					//				Delegate.CreateDelegate(typeof(Func<Type, bool>), matchMethods.ElementAt(0));
+
+					var getMethod = randomType.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(t => Attribute.IsDefined(t, typeof(GetAttribute))).First();
+
+					funcs.Add(getMethod, matchFuncs);
+				}
+
+				return funcs;
+			}
+		}
+
 		private static KeyValuePair<bool, object> GetTypeRandomValue(Type type, RandomTypeSettings configuration)
 		{
+
+			var p = Utils.RandomTypesDict.First();
+			
 			switch (type)
 			{
 				case Type t when PrimitiveFuncs.Contains(type):
 					return new KeyValuePair<bool, object>(true, PrimitiveFuncs.Get(type, configuration));
-				case Type i when RandomList.Validate(type):
-					return new KeyValuePair<bool, object>(true, RandomList.Generate(type, configuration));
-				case Type i when RandomEnum.Validate(type):
-					return new KeyValuePair<bool, object>(true, RandomEnum.Generate(type));
-				case Type i when RandomDictionary.Validate(type):
-					return new KeyValuePair<bool, object>(true, RandomDictionary.Generate(type, configuration));
+				case Type i when RandomList.Matches(type):
+					return new KeyValuePair<bool, object>(true, RandomList.Get(type, configuration));
+				case Type i when RandomEnum.Matches(type):
+					return new KeyValuePair<bool, object>(true, RandomEnum.Get(type));
+				case Type i when RandomDictionary.Matches(type):
+					return new KeyValuePair<bool, object>(true, RandomDictionary.Get(type, configuration));
 				default:
 					return new KeyValuePair<bool, object>(false, null);
 			}
