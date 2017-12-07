@@ -15,7 +15,7 @@ namespace RandomType.Types
 		}
 
 		[Get]
-		public static object Get(Type type)
+		public static object Get(Type type, RandomTypeSettings config)
 		{
 			var t = GetNullableType(type);
 			var enumList = Enum.GetValues(t);

@@ -11,10 +11,10 @@ namespace RandomType.Console
 	{
 		static void Main(string[] args)
 		{
-			var part = RandomTypeGenerator.Generate<Dictionary<int, Part>>(c =>
+			var partList = RandomTypeGenerator.GenerateList<Part>(cfg =>
 			{
-				c.Min.DictionarySize = 40;
-				c.Max.DictionarySize = 40;
+				cfg.Min.ListSize = 500;
+				cfg.Max.ListSize = 2000;
 			});
 		}
 

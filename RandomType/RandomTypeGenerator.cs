@@ -76,78 +76,9 @@ namespace RandomType
 			return list;
 		}
 
-		//private static (bool valueSet, object value) GetTypeRandomValue(Type type, RandomTypeSettings configuration)
-		//{
-		//	switch (type)
-		//	{
-		//		case Type t when PrimitiveFuncs.Contains(type):
-		//			return (true, PrimitiveFuncs.Get(type, configuration));
-		//		case Type i when RandomList.Validate(type):
-		//			return (true, RandomList.Generate(type, configuration));
-		//		case Type i when RandomEnum.Validate(type):
-		//			return (true, RandomEnum.Generate(type));
-		//		case Type i when RandomDictionary.Validate(type):
-		//			return (true, RandomDictionary.Generate(type, configuration));
-		//		default:
-		//			return (false, null);
-		//	}
-		//}
-
-		public static Dictionary<MethodInfo, List<Func<Type, bool>>> RandomTypesDict
-		{
-			get
-			{
-				var randomTypes = AppDomain.CurrentDomain.GetAssemblies()
-					.SelectMany(t => t.GetTypes())
-					.Where(t => t.IsClass && Attribute.IsDefined(t, typeof(RandomTypeAttribute)));
-
-				var funcs = new Dictionary<MethodInfo, List<Func<Type, bool>>>();
-				foreach (var randomType in randomTypes)
-				{
-					var matchMethods = randomType.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(t => Attribute.IsDefined(t, typeof(MatchAttribute)));
-					var matchFuncs = new List<Func<Type, bool>>();
-					foreach (var matchMethod in matchMethods)
-					{
-						Func<Type, bool> matchFunc = (Func<Type, bool>)
-										Delegate.CreateDelegate(typeof(Func<Type, bool>), matchMethod);
-						matchFuncs.Add(matchFunc);
-					}
-
-					//Func<Type, bool> matchFuncs = (Func<Type, bool>)
-					//				Delegate.CreateDelegate(typeof(Func<Type, bool>), matchMethods.ElementAt(0));
-
-					var getMethod = randomType.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(t => Attribute.IsDefined(t, typeof(GetAttribute))).First();
-
-					funcs.Add(getMethod, matchFuncs);
-				}
-
-				return funcs;
-			}
-		}
-
-		private static KeyValuePair<bool, object> GetTypeRandomValue(Type type, RandomTypeSettings configuration)
-		{
-
-			var p = Utils.RandomTypesDict.First();
-			
-			switch (type)
-			{
-				case Type t when PrimitiveFuncs.Contains(type):
-					return new KeyValuePair<bool, object>(true, PrimitiveFuncs.Get(type, configuration));
-				case Type i when RandomList.Matches(type):
-					return new KeyValuePair<bool, object>(true, RandomList.Get(type, configuration));
-				case Type i when RandomEnum.Matches(type):
-					return new KeyValuePair<bool, object>(true, RandomEnum.Get(type));
-				case Type i when RandomDictionary.Matches(type):
-					return new KeyValuePair<bool, object>(true, RandomDictionary.Get(type, configuration));
-				default:
-					return new KeyValuePair<bool, object>(false, null);
-			}
-		}
-
 		public static object Generate(Type type, RandomTypeSettings configuration)
 		{
-			var tv = GetTypeRandomValue(type, configuration);
+			var tv = Matcher.TryMatch(type, configuration);
 			if (tv.Key)
 			{
 				return tv.Value;
@@ -160,7 +91,7 @@ namespace RandomType
 				{
 
 					var propType = prop.PropertyType;
-					tv = GetTypeRandomValue(propType, configuration);
+					tv = Matcher.TryMatch(propType, configuration);
 
 					if (tv.Key)
 					{
