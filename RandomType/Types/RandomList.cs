@@ -5,11 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace RandomType.CustomRandom
+namespace RandomType.Types
 {
-    internal class RandomList
-    {
-		public static bool Validate(Type type)
+	[RandomType]
+	internal class RandomList
+	{
+		[Match]
+		public static bool Matches(Type type)
 		{
 			Type tColl = typeof(ICollection<>);
 			return (type.IsGenericType && tColl.IsAssignableFrom(type.GetGenericTypeDefinition()) ||
@@ -17,7 +19,8 @@ namespace RandomType.CustomRandom
 				&& !typeof(IDictionary).IsAssignableFrom(type);
 		}
 
-		public static IList Generate(Type type, RandomTypeSettings config)
+		[Get]
+		public static IList Get(Type type, RandomTypeSettings config)
 		{
 			if (type.IsArray)
 			{

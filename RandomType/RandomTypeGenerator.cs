@@ -1,4 +1,4 @@
-﻿using RandomType.CustomRandom;
+﻿using RandomType.Types;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace RandomType
 		/// <returns></returns>
 		public static List<T> GenerateList<T>()
 		{
-			var list = RandomList.Generate(typeof(T), new RandomTypeSettings());
+			var list = RandomList.Get(typeof(T), new RandomTypeSettings());
 			return (List<T>)list;
 		}
 
@@ -60,59 +60,25 @@ namespace RandomType
 		{
 			RandomTypeSettings defaultConfiguration = new RandomTypeSettings();
 			configuration.Invoke(defaultConfiguration);
-			var list = RandomList.Generate(typeof(T), defaultConfiguration);
+			var list = RandomList.Get(typeof(T), defaultConfiguration);
 			return (List<T>)list;
 		}
 
 		public static List<T> GenerateList<T>(RandomTypeSettings configuration)
 		{
-			var list = RandomList.Generate(typeof(T), configuration);
+			var list = RandomList.Get(typeof(T), configuration);
 			return (List<T>)list;
 		}
 
 		public static object GenerateList(Type type, RandomTypeSettings configuration)
 		{
-			var list = RandomList.Generate(type, configuration);
+			var list = RandomList.Get(type, configuration);
 			return list;
-		}
-
-		//private static (bool valueSet, object value) GetTypeRandomValue(Type type, RandomTypeSettings configuration)
-		//{
-		//	switch (type)
-		//	{
-		//		case Type t when PrimitiveFuncs.Contains(type):
-		//			return (true, PrimitiveFuncs.Get(type, configuration));
-		//		case Type i when RandomList.Validate(type):
-		//			return (true, RandomList.Generate(type, configuration));
-		//		case Type i when RandomEnum.Validate(type):
-		//			return (true, RandomEnum.Generate(type));
-		//		case Type i when RandomDictionary.Validate(type):
-		//			return (true, RandomDictionary.Generate(type, configuration));
-		//		default:
-		//			return (false, null);
-		//	}
-		//}
-
-		private static KeyValuePair<bool, object> GetTypeRandomValue(Type type, RandomTypeSettings configuration)
-		{
-			switch (type)
-			{
-				case Type t when PrimitiveFuncs.Contains(type):
-					return new KeyValuePair<bool, object>(true, PrimitiveFuncs.Get(type, configuration));
-				case Type i when RandomList.Validate(type):
-					return new KeyValuePair<bool, object>(true, RandomList.Generate(type, configuration));
-				case Type i when RandomEnum.Validate(type):
-					return new KeyValuePair<bool, object>(true, RandomEnum.Generate(type));
-				case Type i when RandomDictionary.Validate(type):
-					return new KeyValuePair<bool, object>(true, RandomDictionary.Generate(type, configuration));
-				default:
-					return new KeyValuePair<bool, object>(false, null);
-			}
 		}
 
 		public static object Generate(Type type, RandomTypeSettings configuration)
 		{
-			var tv = GetTypeRandomValue(type, configuration);
+			var tv = Matcher.TryMatch(type, configuration);
 			if (tv.Key)
 			{
 				return tv.Value;
@@ -125,7 +91,7 @@ namespace RandomType
 				{
 
 					var propType = prop.PropertyType;
-					tv = GetTypeRandomValue(propType, configuration);
+					tv = Matcher.TryMatch(propType, configuration);
 
 					if (tv.Key)
 					{

@@ -4,16 +4,19 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace RandomType.CustomRandom
+namespace RandomType.Types
 {
+	[RandomType]
 	internal class RandomDictionary
 	{
-		public static bool Validate(Type type)
+		[Match]
+		public static bool Matches(Type type)
 		{
 			return type.IsGenericType && typeof(IDictionary).IsAssignableFrom(type);
 		}
 
-		public static IDictionary Generate(Type type, RandomTypeSettings config)
+		[Get]
+		public static IDictionary Get(Type type, RandomTypeSettings config)
 		{
 			var dic = (IDictionary)Activator.CreateInstance(type);
 			var keyType = type.GetGenericArguments()[0];
